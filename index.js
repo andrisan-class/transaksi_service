@@ -92,6 +92,49 @@ app.get("/transaksi/:id_member", (req, res) => {
     });
 });
 
+app.post("/cart", (req, res) => {
+  let id_user = req.body.id_user;
+  let id_film = req.body.id_film;
+  let poster = req.body.poster;
+  let price = req.body.price;
+  let title = req.body.title;
+
+  if (
+    id_user.length === 0 ||
+    id_film.length === 0 ||
+    poster.length === 0 ||
+    price.length === 0 ||
+    title.length === 0
+  ) {
+    res.send("Ada yang kosong!");
+  } else {
+    const form_data = {
+      id_user,
+      id_film,
+      poster,
+      price,
+      title,
+    };
+
+    db.collection("cart").add(form_data);
+    res.send(form_data);
+  }
+});
+
+app.get("/cart/:id_user", (req, res) => {
+  let id_user = req.params.id_user;
+  db.collection("cart")
+    .where("id_user", "==", id_user)
+    .get()
+    .then((snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      res.send(data);
+    });
+});
+
 // app.put("/transaksi/:id_transaksi", (req, res) => {
 //   let id_transaksi = req.params.id_transaksi;
 //   let jenis_transaksi = req.body.jenis_transaksi;
